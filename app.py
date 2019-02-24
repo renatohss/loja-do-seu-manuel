@@ -41,15 +41,14 @@ def insert_object():
         return jsonify(job)
 
 
-@app.route('/delete/', methods=['GET'])
+@app.route('/delete/<pk>', methods=['GET'])
 def delete_object(pk):
-    id = request.args.get('id')
-    collection = request.args.get('type')
+
     params = {
-        'id': int(id)
+        'id': int(pk)
     }
 
-    job = mc.delete(collection=collection, params=params)
+    job = mc.delete(collection='products', params=params)
     return jsonify(job)
 
 

@@ -60,6 +60,11 @@ class MongoConnect:
 
 
     def delete(self, collection, params):
+        check = self.id_check(collection=collection, pk=int(params['id']))
+        if not check:
+            print('Object does not exist')
+            return self.jb.build(False, 'Object does not exist')
+
         coll = self.collection_check(collection)
 
         try:
@@ -79,7 +84,7 @@ class MongoConnect:
 
         coll = self.collection_check(collection)
         try:
-            coll.update_one({'id': pk}, params)
+            coll.update_one({'id': pk}, {'$set':params})
         except Exception as e:
             print('Error updating object on MongoDB', e)
             return self.jb.build(False, "Error updating object on MongoDB - See console for error reference")
