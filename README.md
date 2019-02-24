@@ -12,7 +12,7 @@ This API simulates a retail store system, with products, stocks and orders manag
 
 ## Resources
 ### Add new object (product or order)
-- **Endpoint:** /new/?type=<orders or products>
+- **Endpoint:** /new/?type=orders or products
 - **Method:** POST
 - **Request body:** JSON
 - **Request format:**
@@ -58,12 +58,12 @@ This API simulates a retail store system, with products, stocks and orders manag
 ```
 
 ### Retrieve an existing product or order
-- **Endpoint:** /get/?type=<orders or products>&id=<order or product id>
+- **Endpoint:** /get/?type=orders or products&id=order or product id
 - **Method:** GET
 - **Response:** The response is the object (order or product) saved within the requested id
 
 ### Updating an existing product or order
-- **Endpoint:** /update/?type=<orders or products>&id=<order or product id>
+- **Endpoint:** /update/?type=orders or products&id=order or product id
 - **Method:** POST
 - **Request body:** JSON
 - **Request format:** Use the same format as **new object endpoint**, passing only the fields you want to update
@@ -76,7 +76,7 @@ This API simulates a retail store system, with products, stocks and orders manag
 ```
 
 ### Deleting an existing product
-- **Endpoint:** /delete/?id=<product id>
+- **Endpoint:** /delete/?id=product id
 - **Method:** GET
 - **Response:**
 ```
