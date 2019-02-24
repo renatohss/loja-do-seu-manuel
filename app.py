@@ -1,77 +1,73 @@
 from flask import Flask, request, jsonify
-from pymongo import MongoClient
 from pprint import pprint
 from helpers.jsonbuilder import JsonBuilder
 from helpers.mongo_adapter import MongoConnect
+from helpers.order_manager import OrderManager
 import json
 
 app = Flask(__name__)
 
-client = MongoClient()
-db = client.shopdata
-products_coll = db.products
-customers_coll = db.customers
-orders_coll = db.orders
-
 mc = MongoConnect()
 jb = JsonBuilder()
+om = OrderManager()
 
-@app.route('/product/get/<pk>', methods=['GET'])
-def find_product(pk):
-
+@app.route('/get/', methods=['GET'])
+def find_object():
+    id = request.args.get('id')
+    collection = request.args.get('type')
     params = {
-        'id': int(pk)
+        'id': int(id)
     }
 
-    job = mc.get(collection='products', params=params)
+    job = mc.get(collection=collection, params=params)
     return jsonify(job)
 
 
-@app.route('/product/insert', methods=['POST'])
-def insert_product():
+@app.route('/new/', methods=['POST'])
+def insert_object():
+    collection = request.args.get('type')
     payload = request.get_json()
-
-    job = mc.insert(collection='products', params=payload)
-    return jsonify(job)
-
-
-@app.route('/product/delete/<pk>', methods=['GET'])
-def delete_product(pk):
-    params = {
-        'id': int(pk)
-    }
-
-    job = mc.delete(collection='products', params=params)
-    return jsonify(job)
-
-
-@app.route('/product/update/<pk>', methods=['POST'])
-def update_product(pk):
-    payload = request.get_json()
-    update_doc = {}
 
     if len(payload) == 0:
-        json_resp = jb.build(False, 'Update document cannot be empty')
-        return jsonify(json_resp)
-    
-    id_check = products_coll.find_one({'id': pk})
-
-    if not id_check:
-        json_resp = jb.build(False, 'Product does not exist - Use /insert endpoint to insert it')
+        json_resp = jb.build(False, 'JSON cannot be empty')
         return jsonify(json_resp)
 
-    if 'id' in payload.keys():
-        update_doc['id'] = payload['id']
-    if 'name' in payload.keys():
-        update_doc['name'] = payload['name']
-    if 'description' in payload.keys():
-        update_doc['description'] = payload['description']
-    if 'price' in payload.keys():
-        update_doc['price'] = payload['price']
-    if 'stock' in payload.keys():
-        update_doc['stock'] = payload['stock']
-    if 'details' in payload.keys():
-        update_doc['details'] = payload['details']
+    if collection == 'orders':
+        job = om.validate_new_order(order=payload)
+        return jsonify(job)
 
-    job = mc.update(collection='product', pk=pk, params=update_doc)
-    return 'Update product no. ' + pk
+    elif collection == 'products':
+        job = mc.insert(collection=collection, params=payload)
+        return jsonify(job)
+
+
+@app.route('/delete/', methods=['GET'])
+def delete_object(pk):
+    id = request.args.get('id')
+    collection = request.args.get('type')
+    params = {
+        'id': int(id)
+    }
+
+    job = mc.delete(collection=collection, params=params)
+    return jsonify(job)
+
+
+@app.route('/update/', methods=['POST'])
+def update_object():
+    id = request.args.get('id')
+    collection = request.args.get('type')
+    payload = request.get_json()
+
+    if len(payload) == 0:
+        json_resp = jb.build(False, 'JSON cannot be empty')
+        return jsonify(json_resp)
+
+    job = mc.update(collection=collection, pk=int(id), params=payload)
+    return jsonify(job)
+
+@app.route('/get_ticket/', methods=['GET'])
+def get_ticket():
+    ticket = om.calculate_ticket()
+    print('Average Ticket:', ticket)
+    return jsonify(ticket)

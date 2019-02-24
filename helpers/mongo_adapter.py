@@ -12,17 +12,17 @@ class MongoConnect:
 
 
     def collection_check(self, collection):
-        if collection == 'products':
+        if collection == 'products' or collection == 'product':
             collection = self.products
-        elif collection == 'orders':
-            collection == self.orders
+        elif collection == 'orders' or collection == 'order':
+            collection = self.orders
         else:
             print('Collection does not exist!')
             return self.jb.build(False, 'Collection does not exist')
         return collection
 
 
-    def object_check(self, collection, pk):
+    def id_check(self, collection, pk):
         coll = self.collection_check(collection)
         query = coll.find_one({'id': int(pk)})
         if query:
@@ -45,7 +45,7 @@ class MongoConnect:
         coll = self.collection_check(collection)
         pk = int(params['id'])
 
-        check = self.object_check(collection=collection, pk=pk)
+        check = self.id_check(collection=collection, pk=pk)
         if check:
             print('Product/order already exists')
             return self.jb.build(False, 'Product/order already exists')
@@ -72,10 +72,24 @@ class MongoConnect:
 
   
     def update(self, collection, pk, params):
-        pass
+        check = self.id_check(collection=collection, pk=int(pk))
+        if not check:
+            print('Object does not exist')
+            return self.jb.build(False, 'Object does not exist')
 
         coll = self.collection_check(collection)
+        try:
+            coll.update_one({'id': pk}, params)
+        except Exception as e:
+            print('Error updating object on MongoDB', e)
+            return self.jb.build(False, "Error updating object on MongoDB - See console for error reference")
+        
+        return self.jb.build(True, "Object updated with success!")
 
+
+    def get_all_orders(self):
+        response = self.orders.find({}, {'_id': 0, 'total_price': 1})
+        return response
 
 
 
