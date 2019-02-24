@@ -9,6 +9,7 @@ This API simulates a retail store system, with products, stocks and orders manag
 - Run Flask app using the command: 
 ```flask run```
 - App will run on **localhost**, port **5000**
+- **IMPORTANT:** MongoDB must be installed!
 
 ## Resources
 ### Add new object (product or order)
@@ -93,14 +94,14 @@ This API simulates a retail store system, with products, stocks and orders manag
 ```
 {
     "success": true or false,
-    "message": Avg. ticket if success or correspondent error message
+    "message": Avg. ticket if success or correspondent error message if failure
 }
 ```
 
 ## Technologies used:
 - **Python 3:** Used for its simplicity and flexibility to execute different tasks
 - **Flask:** A lightweight API framework, used for being easy to use and powerful enough to accomodate many types of function
-- **MongoDB:** Used for its scalabilty and for being non-relational, which helps if new fields should be added to products and orders
+- **MongoDB/Pymongo:** Used for its scalabilty and for being non-relational, which helps if new fields should be added to products and orders
 
 ## TO DO List
 - **Automated Tests:** So far, I hadn't the opportunity to work with tests, but it is a topic I'm currently learning and will be implemented in the near future
